@@ -1,0 +1,9 @@
+.env
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+data/
+.DS_Store
+research/
+future-plans/
+

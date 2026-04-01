@@ -1,0 +1,371 @@
+[
+  {
+    "source_system": "order_service",
+    "ingestion_time": "2026-01-03T12:15:00Z",
+    "store_details": {
+      "store_id": "ST-002",
+      "city": "Westfield",
+      "state": "CA",
+      "zip": "90001",
+      "region": "West",
+      "store_attributes": { "store_type": "OWNED", "opened_year": 2020 }
+    },
+    "order": {
+      "order_id": "ORD-10011",
+      "order_time": "2026-01-03T12:00:00Z",
+      "status": "PAID",
+      "order_events": [
+        { "event_type": "CREATED", "event_time": "2026-01-03T12:00:00Z" },
+        { "event_type": "PAID", "event_time": "2026-01-03T12:03:00Z" }
+      ],
+      "customer": {
+        "customer_id": "C-1002",
+        "name": { "first_name": "Sarah", "last_name": "Connor" },
+        "address": { "city": "Los Angeles", "zip": "90001" },
+        "attributes": { "segment": "RETURNING", "loyalty_tier": "GOLD" }
+      },
+      "payments": [
+        {
+          "payment_id": "PAY-10011",
+          "method": "CARD",
+          "provider": "VISA",
+          "status": "SUCCESS",
+          "attempt_time": "2026-01-03T12:03:00Z"
+        }
+      ],
+      "delivery": {
+        "delivery_partner": {
+          "partner_id": "DP-02",
+          "partner_name": "FedEx",
+          "partner_type": "THIRD_PARTY"
+        },
+        "delivery_type": "STANDARD",
+        "dispatch_time": null,
+        "actual_delivery_time": null,
+        "expected_delivery_date": "2026-01-06",
+        "sla_days": 3,
+        "delivery_attempts": 0,
+        "delivery_address": { "city": "Los Angeles", "zip": "90001" }
+      },
+      "charges": { "shipping_fee": 600, "tax": 3100, "currency": "INR" },
+      "items": [
+        {
+          "item_id": "ITEM-10011-A",
+          "product_details": {
+            "product_id": "P-202",
+            "product_name": "Office Chair",
+            "brand": "Ikea",
+            "category": "Furniture"
+          },
+          "price": 18000,
+          "quantity": 1,
+          "discounts": [
+            { "discount_type": "ITEM_PROMO", "code": "FURN20", "amount": 2000 },
+            { "discount_type": "COUPON", "code": "NEWYEAR500", "amount": 500 }
+          ]
+        },
+        {
+          "item_id": "ITEM-10011-B",
+          "product_details": {
+            "product_id": "P-808",
+            "product_name": "Desk Lamp",
+            "brand": "Philips",
+            "category": "Home"
+          },
+          "price": 2500,
+          "quantity": 2,
+          "discounts": []
+        }
+      ],
+      "device_context": { "platform": "ANDROID", "app_version": "5.3.0", "ip_address": "10.0.0.11" }
+    }
+  },
+
+  {
+    "source_system": "order_service",
+    "ingestion_time": "2026-01-03T12:30:00Z",
+    "store_details": {
+      "store_id": "ST-003",
+      "city": "Austin",
+      "state": "TX",
+      "zip": "73301",
+      "region": "South",
+      "store_attributes": { "store_type": "OWNED", "opened_year": 2019 }
+    },
+    "order": {
+      "order_id": "ORD-10012",
+      "order_time": "2026-01-03T12:15:00Z",
+      "status": "SHIPPED",
+      "order_events": [
+        { "event_type": "CREATED", "event_time": "2026-01-03T12:15:00Z" },
+        { "event_type": "PAID", "event_time": "2026-01-03T12:17:00Z" },
+        { "event_type": "SHIPPED", "event_time": "2026-01-03T12:40:00Z" }
+      ],
+      "customer": {
+        "customer_id": "C-1008",
+        "name": { "first_name": "Ananya", "last_name": "Gupta" },
+        "address": { "city": "Hyderabad", "zip": "500001" },
+        "attributes": { "segment": "NEW", "loyalty_tier": "NONE" }
+      },
+      "payments": [
+        {
+          "payment_id": "PAY-10012",
+          "method": "NET_BANKING",
+          "provider": "ICICI",
+          "status": "SUCCESS",
+          "attempt_time": "2026-01-03T12:17:00Z"
+        }
+      ],
+      "delivery": {
+        "delivery_partner": {
+          "partner_id": "DP-01",
+          "partner_name": "Delhivery",
+          "partner_type": "THIRD_PARTY"
+        },
+        "delivery_type": "STANDARD",
+        "dispatch_time": "2026-01-03T13:00:00Z",
+        "actual_delivery_time": null,
+        "expected_delivery_date": "2026-01-06",
+        "sla_days": 3,
+        "delivery_attempts": 0,
+        "delivery_address": { "city": "Hyderabad", "zip": "500001" }
+      },
+      "charges": { "shipping_fee": 350, "tax": 600, "currency": "INR" },
+      "items": [
+        {
+          "item_id": "ITEM-10012",
+          "product_details": {
+            "product_id": "P-303",
+            "product_name": "Portable SSD",
+            "brand": "Seagate",
+            "category": "Accessories"
+          },
+          "price": 7500,
+          "quantity": 1,
+          "discounts": []
+        }
+      ],
+      "device_context": { "platform": "WEB", "app_version": "1.0.0", "ip_address": "10.0.0.12" }
+    }
+  },
+
+  {
+    "source_system": "order_service",
+    "ingestion_time": "2026-01-03T12:45:00Z",
+    "store_details": {
+      "store_id": "ST-001",
+      "city": "Jeremyland",
+      "state": "NY",
+      "zip": "18822",
+      "region": "Northeast",
+      "store_attributes": { "store_type": "FRANCHISE", "opened_year": 2018 }
+    },
+    "order": {
+      "order_id": "ORD-10013",
+      "order_time": "2026-01-03T12:30:00Z",
+      "status": "PAID",
+      "order_events": [
+        { "event_type": "CREATED", "event_time": "2026-01-03T12:30:00Z" },
+        { "event_type": "PAID", "event_time": "2026-01-03T12:38:00Z" }
+      ],
+      "customer": {
+        "customer_id": "C-1004",
+        "name": { "first_name": "Neha", "last_name": "Singh" },
+        "address": { "city": "Delhi", "zip": "110001" },
+        "attributes": { "segment": "RETURNING", "loyalty_tier": "SILVER" }
+      },
+      "payments": [
+        {
+          "payment_id": "PAY-10013-A",
+          "method": "UPI",
+          "provider": "PhonePe",
+          "status": "FAILED",
+          "failure_reason": "INSUFFICIENT_BALANCE",
+          "attempt_time": "2026-01-03T12:32:00Z"
+        },
+        {
+          "payment_id": "PAY-10013-B",
+          "method": "UPI",
+          "provider": "GooglePay",
+          "status": "FAILED",
+          "failure_reason": "TIMEOUT",
+          "attempt_time": "2026-01-03T12:35:00Z"
+        },
+        {
+          "payment_id": "PAY-10013-C",
+          "method": "CARD",
+          "provider": "VISA",
+          "status": "SUCCESS",
+          "attempt_time": "2026-01-03T12:38:00Z"
+        }
+      ],
+      "delivery": {
+        "delivery_partner": {
+          "partner_id": "DP-01",
+          "partner_name": "Delhivery",
+          "partner_type": "THIRD_PARTY"
+        },
+        "delivery_type": "STANDARD",
+        "dispatch_time": null,
+        "actual_delivery_time": null,
+        "expected_delivery_date": "2026-01-07",
+        "sla_days": 4,
+        "delivery_attempts": 0,
+        "delivery_address": { "city": "Delhi", "zip": "110001" }
+      },
+      "charges": { "shipping_fee": 500, "tax": 1800, "currency": "INR" },
+      "items": [
+        {
+          "item_id": "ITEM-10013",
+          "product_details": {
+            "product_id": "P-101",
+            "product_name": "Laptop",
+            "brand": "Lenovo",
+            "category": "Electronics"
+          },
+          "price": 55000,
+          "quantity": 1,
+          "discounts": [{ "discount_type": "ITEM_PROMO", "code": "ELEC15", "amount": 3000 }]
+        }
+      ],
+      "device_context": { "platform": "ANDROID", "app_version": "5.3.0", "ip_address": "10.0.0.13" }
+    }
+  },
+
+  {
+    "source_system": "order_service",
+    "ingestion_time": "2026-01-03T13:00:00Z",
+    "store_details": {
+      "store_id": "ST-004",
+      "city": "Seattle",
+      "state": "WA",
+      "zip": "98101",
+      "region": "West",
+      "store_attributes": { "store_type": "OWNED", "opened_year": 2017 }
+    },
+    "order": {
+      "order_id": "ORD-10014",
+      "order_time": "2026-01-03T12:45:00Z",
+      "status": "DELIVERED",
+      "order_events": [
+        { "event_type": "CREATED", "event_time": "2026-01-03T12:45:00Z" },
+        { "event_type": "PAID", "event_time": "2026-01-03T12:47:00Z" },
+        { "event_type": "SHIPPED", "event_time": "2026-01-03T13:10:00Z" },
+        { "event_type": "DELIVERED", "event_time": "2026-01-07T16:30:00Z" }
+      ],
+      "customer": {
+        "customer_id": "C-1006",
+        "name": { "first_name": "Priya", "last_name": "Patel" },
+        "address": { "city": "Chicago", "zip": "60601" },
+        "attributes": { "segment": "RETURNING", "loyalty_tier": "SILVER" }
+      },
+      "payments": [
+        {
+          "payment_id": "PAY-10014",
+          "method": "NET_BANKING",
+          "provider": "SBI",
+          "status": "SUCCESS",
+          "attempt_time": "2026-01-03T12:47:00Z"
+        }
+      ],
+      "delivery": {
+        "delivery_partner": {
+          "partner_id": "DP-02",
+          "partner_name": "FedEx",
+          "partner_type": "THIRD_PARTY"
+        },
+        "delivery_type": "STANDARD",
+        "dispatch_time": "2026-01-03T13:10:00Z",
+        "actual_delivery_time": "2026-01-07T16:30:00Z",
+        "expected_delivery_date": "2026-01-06",
+        "sla_days": 3,
+        "delivery_attempts": 3,
+        "delivery_address": { "city": "Chicago", "zip": "60601" }
+      },
+      "charges": { "shipping_fee": 450, "tax": 2100, "currency": "INR" },
+      "items": [
+        {
+          "item_id": "ITEM-10014",
+          "product_details": {
+            "product_id": "P-606",
+            "product_name": "Headphones",
+            "brand": "Sony",
+            "category": "Electronics"
+          },
+          "price": 15000,
+          "quantity": 1,
+          "discounts": [{ "discount_type": "ITEM_PROMO", "code": "AUDIO10", "amount": 1500 }]
+        }
+      ],
+      "device_context": { "platform": "IOS", "app_version": "5.1.0", "ip_address": "10.0.0.14" }
+    }
+  },
+
+  {
+    "source_system": "order_service",
+    "ingestion_time": "2026-01-03T13:15:00Z",
+    "store_details": {
+      "store_id": "ST-001",
+      "city": "Jeremyland",
+      "state": "NY",
+      "zip": "18822",
+      "region": "Northeast",
+      "store_attributes": { "store_type": "OWNED", "opened_year": 2018 }
+    },
+    "order": {
+      "order_id": "ORD-10015",
+      "order_time": "2026-01-03T13:00:00Z",
+      "status": "SHIPPED",
+      "order_events": [
+        { "event_type": "CREATED", "event_time": "2026-01-03T13:00:00Z" },
+        { "event_type": "PAID", "event_time": "2026-01-03T13:02:00Z" },
+        { "event_type": "SHIPPED", "event_time": "2026-01-03T13:30:00Z" }
+      ],
+      "customer": {
+        "customer_id": "C-1009",
+        "name": { "first_name": "Deepak", "last_name": "Verma" },
+        "address": { "city": "Bangalore", "zip": "560001" },
+        "attributes": { "segment": "NEW", "loyalty_tier": "NONE" }
+      },
+      "payments": [
+        {
+          "payment_id": "PAY-10015",
+          "method": "UPI",
+          "provider": "PhonePe",
+          "status": "SUCCESS",
+          "attempt_time": "2026-01-03T13:02:00Z"
+        }
+      ],
+      "delivery": {
+        "delivery_partner": {
+          "partner_id": "DP-03",
+          "partner_name": "BlueDart",
+          "partner_type": "THIRD_PARTY"
+        },
+        "delivery_type": "STANDARD",
+        "dispatch_time": "2026-01-03T13:30:00Z",
+        "actual_delivery_time": null,
+        "expected_delivery_date": "2026-01-07",
+        "sla_days": 4,
+        "delivery_attempts": 0,
+        "delivery_address": { "city": "Bangalore", "zip": "560001" }
+      },
+      "charges": { "shipping_fee": 550, "tax": 700, "currency": "INR" },
+      "items": [
+        {
+          "item_id": "ITEM-10015",
+          "product_details": {
+            "product_id": "P-1010",
+            "product_name": "Keyboard",
+            "brand": "Logitech",
+            "category": "Accessories"
+          },
+          "price": 3500,
+          "quantity": 1,
+          "discounts": []
+        }
+      ],
+      "device_context": { "platform": "WEB", "app_version": "1.1.0", "ip_address": "10.0.0.15" }
+    }
+  }
+]

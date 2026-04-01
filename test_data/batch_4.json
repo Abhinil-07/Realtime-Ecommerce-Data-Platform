@@ -1,0 +1,392 @@
+[
+  {
+    "source_system": "order_service",
+    "ingestion_time": "2026-01-03T13:30:00Z",
+    "store_details": {
+      "store_id": "ST-002",
+      "city": "Westfield",
+      "state": "CA",
+      "zip": "90001",
+      "region": "West",
+      "store_attributes": { "store_type": "OWNED", "opened_year": 2020 }
+    },
+    "order": {
+      "order_id": "ORD-10016",
+      "order_time": "2026-01-03T13:15:00Z",
+      "status": "CANCELLED",
+      "order_events": [
+        { "event_type": "CREATED", "event_time": "2026-01-03T13:15:00Z" },
+        { "event_type": "PAID", "event_time": "2026-01-03T13:17:00Z" },
+        { "event_type": "CANCELLED", "event_time": "2026-01-03T13:45:00Z" }
+      ],
+      "customer": {
+        "customer_id": "C-1002",
+        "name": { "first_name": "Sarah", "last_name": "Connor" },
+        "address": { "city": "Los Angeles", "zip": "90001" },
+        "attributes": { "segment": "RETURNING", "loyalty_tier": "GOLD" }
+      },
+      "payments": [
+        {
+          "payment_id": "PAY-10016",
+          "method": "CARD",
+          "provider": "MASTERCARD",
+          "status": "SUCCESS",
+          "attempt_time": "2026-01-03T13:17:00Z"
+        }
+      ],
+      "delivery": {
+        "delivery_partner": {
+          "partner_id": "DP-01",
+          "partner_name": "Delhivery",
+          "partner_type": "THIRD_PARTY"
+        },
+        "delivery_type": "STANDARD",
+        "dispatch_time": null,
+        "actual_delivery_time": null,
+        "expected_delivery_date": "2026-01-06",
+        "sla_days": 3,
+        "delivery_attempts": 0,
+        "delivery_address": { "city": "Los Angeles", "zip": "90001" }
+      },
+      "charges": { "shipping_fee": 500, "tax": 900, "currency": "INR" },
+      "items": [
+        {
+          "item_id": "ITEM-10016",
+          "product_details": {
+            "product_id": "P-404",
+            "product_name": "Bookshelf",
+            "brand": "UrbanLadder",
+            "category": "Furniture"
+          },
+          "price": 9000,
+          "quantity": 1,
+          "discounts": []
+        }
+      ],
+      "device_context": { "platform": "IOS", "app_version": "5.1.0", "ip_address": "10.0.0.16" }
+    }
+  },
+
+  {
+    "source_system": "order_service",
+    "ingestion_time": "2026-01-03T13:45:00Z",
+    "store_details": {
+      "store_id": "ST-003",
+      "city": "Austin",
+      "state": "TX",
+      "zip": "73301",
+      "region": "South",
+      "store_attributes": { "store_type": "OWNED", "opened_year": 2019 }
+    },
+    "order": {
+      "order_id": "ORD-10017",
+      "order_time": "2026-01-03T13:30:00Z",
+      "status": "SHIPPED",
+      "order_events": [
+        { "event_type": "CREATED", "event_time": "2026-01-03T13:30:00Z" },
+        { "event_type": "PAID", "event_time": "2026-01-03T13:32:00Z" },
+        { "event_type": "SHIPPED", "event_time": "2026-01-03T13:50:00Z" }
+      ],
+      "customer": {
+        "customer_id": "C-1003",
+        "name": { "first_name": "Ravi", "last_name": "Kumar" },
+        "address": { "city": "Houston", "zip": "77001" },
+        "attributes": { "segment": "LOYAL", "loyalty_tier": "PLATINUM" }
+      },
+      "payments": [
+        {
+          "payment_id": "PAY-10017",
+          "method": "UPI",
+          "provider": "GooglePay",
+          "status": "SUCCESS",
+          "attempt_time": "2026-01-03T13:32:00Z"
+        }
+      ],
+      "delivery": {
+        "delivery_partner": {
+          "partner_id": "DP-03",
+          "partner_name": "BlueDart Express",
+          "partner_type": "THIRD_PARTY"
+        },
+        "delivery_type": "EXPRESS",
+        "dispatch_time": "2026-01-03T14:00:00Z",
+        "actual_delivery_time": null,
+        "expected_delivery_date": "2026-01-04",
+        "sla_days": 1,
+        "delivery_attempts": 0,
+        "delivery_address": { "city": "Houston", "zip": "77001" }
+      },
+      "charges": { "shipping_fee": 900, "tax": 1800, "currency": "INR" },
+      "items": [
+        {
+          "item_id": "ITEM-10017",
+          "product_details": {
+            "product_id": "P-707",
+            "product_name": "Gaming Mouse",
+            "brand": "Logitech",
+            "category": "Electronics"
+          },
+          "price": 4500,
+          "quantity": 3,
+          "discounts": [{ "discount_type": "ITEM_PROMO", "code": "GAME10", "amount": 500 }]
+        }
+      ],
+      "device_context": { "platform": "ANDROID", "app_version": "5.3.0", "ip_address": "10.0.0.17" }
+    }
+  },
+
+  {
+    "source_system": "order_service",
+    "ingestion_time": "2026-01-03T14:00:00Z",
+    "store_details": {
+      "store_id": "ST-004",
+      "city": "Seattle",
+      "state": "WA",
+      "zip": "98101",
+      "region": "West",
+      "store_attributes": { "store_type": "OWNED", "opened_year": 2017 }
+    },
+    "order": {
+      "order_id": "ORD-10018",
+      "order_time": "2026-01-03T13:45:00Z",
+      "status": "SHIPPED",
+      "order_events": [
+        { "event_type": "CREATED", "event_time": "2026-01-03T13:45:00Z" },
+        { "event_type": "PAID", "event_time": "2026-01-03T13:47:00Z" },
+        { "event_type": "SHIPPED", "event_time": "2026-01-03T14:10:00Z" }
+      ],
+      "customer": {
+        "customer_id": "C-1001",
+        "name": { "first_name": "Amit", "last_name": "Sharma" },
+        "address": { "city": "Bangalore", "zip": "560001" },
+        "attributes": { "segment": "LOYAL", "loyalty_tier": "PLATINUM" }
+      },
+      "payments": [
+        {
+          "payment_id": "PAY-10018",
+          "method": "UPI",
+          "provider": "PhonePe",
+          "status": "SUCCESS",
+          "attempt_time": "2026-01-03T13:47:00Z"
+        }
+      ],
+      "delivery": {
+        "delivery_partner": {
+          "partner_id": "DP-02",
+          "partner_name": "FedEx",
+          "partner_type": "THIRD_PARTY"
+        },
+        "delivery_type": "EXPRESS",
+        "dispatch_time": "2026-01-03T14:30:00Z",
+        "actual_delivery_time": null,
+        "expected_delivery_date": "2026-01-04",
+        "sla_days": 1,
+        "delivery_attempts": 0,
+        "delivery_address": { "city": "Bangalore", "zip": "560001" }
+      },
+      "charges": { "shipping_fee": 1200, "tax": 5400, "currency": "INR" },
+      "items": [
+        {
+          "item_id": "ITEM-10018-A",
+          "product_details": {
+            "product_id": "P-505",
+            "product_name": "Smartphone",
+            "brand": "Samsung",
+            "category": "Electronics"
+          },
+          "price": 42000,
+          "quantity": 1,
+          "discounts": [{ "discount_type": "ITEM_PROMO", "code": "MOBILE5", "amount": 2000 }]
+        },
+        {
+          "item_id": "ITEM-10018-B",
+          "product_details": {
+            "product_id": "P-1010",
+            "product_name": "Keyboard",
+            "brand": "Logitech",
+            "category": "Accessories"
+          },
+          "price": 3500,
+          "quantity": 1,
+          "discounts": []
+        },
+        {
+          "item_id": "ITEM-10018-C",
+          "product_details": {
+            "product_id": "P-606",
+            "product_name": "Headphones",
+            "brand": "Sony",
+            "category": "Electronics"
+          },
+          "price": 15000,
+          "quantity": 1,
+          "discounts": [
+            { "discount_type": "ITEM_PROMO", "code": "AUDIO10", "amount": 1500 },
+            { "discount_type": "COUPON", "code": "NEWYEAR500", "amount": 500 }
+          ]
+        }
+      ],
+      "device_context": { "platform": "ANDROID", "app_version": "5.3.0", "ip_address": "10.0.0.18" }
+    }
+  },
+
+  {
+    "source_system": "order_service",
+    "ingestion_time": "2026-01-03T14:15:00Z",
+    "store_details": {
+      "store_id": "ST-001",
+      "city": "Jeremyland",
+      "state": "NY",
+      "zip": "18822",
+      "region": "Northeast",
+      "store_attributes": { "store_type": "OWNED", "opened_year": 2018 }
+    },
+    "order": {
+      "order_id": "ORD-10019",
+      "order_time": "2026-01-03T14:00:00Z",
+      "status": "DELIVERED",
+      "order_events": [
+        { "event_type": "CREATED", "event_time": "2026-01-03T14:00:00Z" },
+        { "event_type": "PAID", "event_time": "2026-01-03T14:02:00Z" },
+        { "event_type": "SHIPPED", "event_time": "2026-01-03T14:30:00Z" },
+        { "event_type": "DELIVERED", "event_time": "2026-01-05T10:00:00Z" }
+      ],
+      "customer": {
+        "customer_id": "C-1007",
+        "name": { "first_name": "Michael", "last_name": "Brown" },
+        "address": { "city": "Portland", "zip": "97201" },
+        "attributes": { "segment": "RETURNING", "loyalty_tier": "BRONZE" }
+      },
+      "payments": [
+        {
+          "payment_id": "PAY-10019",
+          "method": "CARD",
+          "provider": "VISA",
+          "status": "SUCCESS",
+          "attempt_time": "2026-01-03T14:02:00Z"
+        }
+      ],
+      "delivery": {
+        "delivery_partner": {
+          "partner_id": "DP-01",
+          "partner_name": "Delhivery",
+          "partner_type": "THIRD_PARTY"
+        },
+        "delivery_type": "STANDARD",
+        "dispatch_time": "2026-01-03T14:30:00Z",
+        "actual_delivery_time": "2026-01-05T10:00:00Z",
+        "expected_delivery_date": "2026-01-07",
+        "sla_days": 4,
+        "delivery_attempts": 1,
+        "delivery_address": { "city": "Portland", "zip": "97201" }
+      },
+      "charges": { "shipping_fee": 550, "tax": 3200, "currency": "INR" },
+      "items": [
+        {
+          "item_id": "ITEM-10019",
+          "product_details": {
+            "product_id": "P-909",
+            "product_name": "Tablet",
+            "brand": "Apple",
+            "category": "Electronics"
+          },
+          "price": 35000,
+          "quantity": 1,
+          "discounts": [{ "discount_type": "ITEM_PROMO", "code": "APPLE10", "amount": 3500 }]
+        }
+      ],
+      "device_context": { "platform": "IOS", "app_version": "5.0.2", "ip_address": "10.0.0.19" }
+    }
+  },
+
+  {
+    "source_system": "order_service",
+    "ingestion_time": "2026-01-03T14:30:00Z",
+    "store_details": {
+      "store_id": "ST-002",
+      "city": "Westfield",
+      "state": "CA",
+      "zip": "90001",
+      "region": "West",
+      "store_attributes": { "store_type": "OWNED", "opened_year": 2020 }
+    },
+    "order": {
+      "order_id": "ORD-10020",
+      "order_time": "2026-01-03T14:15:00Z",
+      "status": "PAID",
+      "order_events": [
+        { "event_type": "CREATED", "event_time": "2026-01-03T14:15:00Z" },
+        { "event_type": "PAID", "event_time": "2026-01-03T14:18:00Z" }
+      ],
+      "customer": {
+        "customer_id": "C-1005",
+        "name": { "first_name": "John", "last_name": "Miller" },
+        "address": { "city": "Seattle", "zip": "98101" },
+        "attributes": { "segment": "RETURNING", "loyalty_tier": "PLATINUM" }
+      },
+      "payments": [
+        {
+          "payment_id": "PAY-10020-A",
+          "method": "UPI",
+          "provider": "PhonePe",
+          "status": "FAILED",
+          "failure_reason": "BANK_SERVER_DOWN",
+          "attempt_time": "2026-01-03T14:16:00Z"
+        },
+        {
+          "payment_id": "PAY-10020-B",
+          "method": "CARD",
+          "provider": "AMEX",
+          "status": "SUCCESS",
+          "attempt_time": "2026-01-03T14:18:00Z"
+        }
+      ],
+      "delivery": {
+        "delivery_partner": {
+          "partner_id": "DP-03",
+          "partner_name": "BlueDart Express",
+          "partner_type": "IN_HOUSE"
+        },
+        "delivery_type": "EXPRESS",
+        "dispatch_time": null,
+        "actual_delivery_time": null,
+        "expected_delivery_date": "2026-01-04",
+        "sla_days": 1,
+        "delivery_attempts": 0,
+        "delivery_address": { "city": "Seattle", "zip": "98101" }
+      },
+      "charges": { "shipping_fee": 800, "tax": 4200, "currency": "INR" },
+      "items": [
+        {
+          "item_id": "ITEM-10020-A",
+          "product_details": {
+            "product_id": "P-505",
+            "product_name": "Smartphone",
+            "brand": "Samsung",
+            "category": "Electronics"
+          },
+          "price": 42000,
+          "quantity": 2,
+          "discounts": [
+            { "discount_type": "ITEM_PROMO", "code": "MOBILE5", "amount": 2000 },
+            { "discount_type": "COUPON", "code": "NEWYEAR500", "amount": 500 },
+            { "discount_type": "LOYALTY", "code": "PLAT3000", "amount": 3000 }
+          ]
+        },
+        {
+          "item_id": "ITEM-10020-B",
+          "product_details": {
+            "product_id": "P-303",
+            "product_name": "Portable SSD",
+            "brand": "Seagate",
+            "category": "Accessories"
+          },
+          "price": 7500,
+          "quantity": 1,
+          "discounts": []
+        }
+      ],
+      "device_context": { "platform": "WEB", "app_version": "1.1.0", "ip_address": "10.0.0.20" }
+    }
+  }
+]
