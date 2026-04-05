@@ -1,0 +1,101 @@
+# Databricks Migration Plan
+
+> **Status**: Future goal — local Docker platform first, migrate when stable.
+> **Load this file** only when working on infrastructure, paths, secrets, or orchestration.
+
+---
+
+## What Changes (The Big Four)
+
+### 1. Storage Paths
+| Current (Docker) | Target (Databricks/Azure) |
+|---|---|
+| `/opt/spark-data/landing/` | `abfss://medallion@<storage>.dfs.core.windows.net/landing/` |
+| `/opt/spark-data/bronze/` | `abfss://medallion@<storage>.dfs.core.windows.net/bronze/` |
+| `/opt/spark-data/silver/` | `abfss://medallion@<storage>.dfs.core.windows.net/silver/` |
+| `/opt/spark-data/gold/` | `abfss://medallion@<storage>.dfs.core.windows.net/gold/` |
+
+**Migration rule**: Never hardcode paths. Always read from a config object or environment variable so the swap is a one-line change.
+
+### 2. Secrets
+| Current (Docker) | Target (Databricks) |
+|---|---|
+| `.env` file + `os.environ` | Databricks Secrets + `dbutils.secrets.get(scope, key)` |
+| `KAFKA_API_KEY` in env | Secret scope: `kafka`, key: `api-key` |
+| `KAFKA_API_SECRET` in env | Secret scope: `kafka`, key: `api-secret` |
+
+**Migration rule**: Abstract secret access behind a `get_secret(key)` helper in `src/utils/secrets.py`. Local implementation reads from env; Databricks implementation calls dbutils.
+
+### 3. Table Naming
+| Current (2-level) | Target (Unity Catalog, 3-level) |
+|---|---|
+| `landing.raw_events` | `prod_catalog.landing.raw_events` |
+| `bronze.orders_raw` | `prod_catalog.bronze.orders_raw` |
+| `silver_base.order_fact_RT` | `prod_catalog.silver_base.order_fact_RT` |
+| `silver_enriched.customer_dim` | `prod_catalog.silver_enriched.customer_dim` |
+| `gold_curated.fact_orders` | `prod_catalog.gold_curated.fact_orders` |
+| `gold_rt.sales_summary_RT` | `prod_catalog.gold_rt.sales_summary_RT` |
+| `gold_batch.sales_summary` | `prod_catalog.gold_batch.sales_summary` |
+
+**Migration rule**: All table names must be read from a config dict, never hardcoded inline.
+
+### 4. SparkSession
+| Current (Docker) | Target (Databricks) |
+|---|---|
+| Manual `SparkSession.builder...getOrCreate()` | Removed — Databricks provides `spark` automatically |
+
+**Migration rule**: Wrap SparkSession creation in `src/utils/spark.py` with a `get_spark()` function that detects the environment and returns the appropriate session.
+
+---
+
+## Migration Checklist
+
+### D. Infrastructure
+- [ ] Swap paths: `/opt/spark-data/` → `abfss://container@storage.dfs.core.windows.net/`
+- [ ] Swap secrets: hardcoded Kafka keys → Databricks Secrets / Azure Key Vault
+- [ ] Swap table naming: 2-level → 3-level Unity Catalog (`catalog.schema.table`)
+- [ ] Remove manual SparkSession creation — wrap in `src/utils/spark.py`
+
+### E. Orchestration
+- [ ] Set up Databricks Workflows for batch SCD2 jobs
+- [ ] Define job dependency chain: Landing → Bronze → Silver → Gold
+- [ ] Configure retry policies (3 retries, 5-min delay)
+- [ ] Configure failure alerts (Slack / PagerDuty)
+
+### N. Security & Governance (Databricks-specific)
+- [ ] PII masking on customer name, address, zip (Unity Catalog column-level masking)
+- [ ] Access control: Analysts → Gold only, Engineers → all layers
+- [ ] Enable Unity Catalog data lineage tracking (table-to-table dependencies)
+- [ ] Tag PII columns with sensitivity labels in Unity Catalog
+
+---
+
+## PII Columns to Mask (Unity Catalog)
+These columns contain personally identifiable information and must be masked for analyst access:
+
+| Table | Column | PII Type |
+|---|---|---|
+| `silver_enriched.customer_dim` | `first_name`, `last_name` | Name |
+| `silver_enriched.customer_dim` | `city`, `zip` | Address |
+| `gold_curated.dim_customer` | `first_name`, `last_name`, `city`, `zip` | Name + Address |
+
+---
+
+## What Does NOT Change
+- Delta Lake format — fully supported in Databricks
+- All Spark Structured Streaming logic — identical API
+- DLQ pattern — same good/bad split, same `rejection_reason` column
+- SCD2 MERGE logic — identical SQL
+- Watermarking and window aggregations — identical API
+- The 27-table medallion schema — no structural changes needed
+
+---
+
+## Optional Table 28: `gold_delivery_status_RT`
+If live BI joins on `delivery_fact_RT` + `delivery_partner_dim` prove too slow in Databricks SQL:
+- Add a Stream-Static join in Spark: `readStream` on `silver_delivery_fact_RT`
+- Join against latest `silver_delivery_partner_dim` (static read, refreshed each micro-batch)
+- Group by `partner_name`, 5-min window
+- `writeStream` to `gold_rt.gold_delivery_status_RT`
+
+Decision gate: measure query latency in Databricks SQL first. Only build table 28 if latency > 5s.
