@@ -8,33 +8,33 @@
 
 | # | Layer | Table | Type | Status | Notes |
 |---|---|---|---|---|---|
-| 1 | Landing | `raw_events` | Streaming | ⬜ Unknown | Verify against codebase |
-| 2 | Bronze | `orders_raw` | Streaming | ⬜ Unknown | Verify against codebase |
-| 3 | Silver Base | `order_fact_RT` | Streaming | ⬜ Unknown | |
-| 4 | Silver Base | `order_event_fact_RT` | Streaming | ⬜ Unknown | |
-| 5 | Silver Base | `order_item_fact_RT` | Streaming | ⬜ Unknown | |
-| 6 | Silver Base | `payment_attempt_fact_RT` | Streaming | ⬜ Unknown | |
-| 7 | Silver Base | `delivery_fact_RT` | Streaming | ⬜ Unknown | |
-| 8 | Silver Base | `discount_fact_RT` | Streaming | ⬜ Unknown | |
-| 9 | Silver Enriched | `customer_dim` | Batch SCD2 | ⬜ Unknown | |
-| 10 | Silver Enriched | `product_dim` | Batch SCD2 | ⬜ Unknown | |
-| 11 | Silver Enriched | `store_dim` | Batch SCD2 | ⬜ Unknown | |
-| 12 | Silver Enriched | `delivery_partner_dim` | Batch SCD2 | ⬜ Unknown | |
-| 13 | Gold Curated | `dim_customer` | Batch | ⬜ Unknown | |
-| 14 | Gold Curated | `dim_product` | Batch | ⬜ Unknown | |
-| 15 | Gold Curated | `dim_store` | Batch | ⬜ Unknown | |
-| 16 | Gold Curated | `dim_delivery_partner` | Batch | ⬜ Unknown | |
-| 17 | Gold Curated | `dim_date` | Static | ⬜ Unknown | |
-| 18 | Gold Curated | `fact_orders` | Batch | ⬜ Unknown | Time-range join |
-| 19 | Gold Curated | `fact_order_items` | Batch | ⬜ Unknown | Time-range join |
-| 20 | Gold RT | `sales_summary_RT` | Streaming | ⬜ Unknown | |
-| 21 | Gold RT | `category_sales_metrics_RT` | Streaming | ⬜ Unknown | |
-| 22 | Gold RT | `payment_usage_metrics_RT` | Streaming | ⬜ Unknown | |
-| 23 | Gold RT | `order_lifecycle_metrics_RT` | Streaming | ⬜ Unknown | |
-| 24 | Gold Batch | `sales_summary` | Batch | ⬜ Unknown | |
-| 25 | Gold Batch | `category_sales_metrics` | Batch | ⬜ Unknown | |
-| 26 | Gold Batch | `discount_effectiveness` | Batch | ⬜ Unknown | |
-| 27 | Gold Batch | `delivery_partner_metrics` | Batch | ⬜ Unknown | |
+| 1 | Landing | `raw_events` | Streaming | ✅ Done | `src/streaming/landing.py` |
+| 2 | Bronze | `orders_raw` | Streaming | ✅ Done | `notebooks/bronze.ipynb` |
+| 3 | Silver Base | `order_fact_RT` | Streaming | ✅ Done | `notebooks/silver_base/order_fact_RT.ipynb` |
+| 4 | Silver Base | `order_event_fact_RT` | Streaming | ✅ Done | `notebooks/silver_base/order_event_fact_RT.ipynb` |
+| 5 | Silver Base | `order_item_fact_RT` | Streaming | ✅ Done | `notebooks/silver_base/order_item_fact_RT.ipynb` |
+| 6 | Silver Base | `payment_attempt_fact_RT` | Streaming | ✅ Done | `notebooks/silver_base/payment_attempt_fact_RT.ipynb` |
+| 7 | Silver Base | `delivery_fact_RT` | Streaming | ✅ Done | `notebooks/silver_base/delivery_fact_RT.ipynb` |
+| 8 | Silver Base | `discount_fact_RT` | Streaming | ✅ Done | `notebooks/silver_base/discount_fact_RT.ipynb` |
+| 9 | Silver Enriched | `customer_dim` | Batch SCD2 | ✅ Done | `notebooks/silver_enriched/customer_dim.ipynb` |
+| 10 | Silver Enriched | `product_dim` | Batch SCD2 | ✅ Done | `notebooks/silver_enriched/product_dim.ipynb` |
+| 11 | Silver Enriched | `store_dim` | Batch SCD2 | ✅ Done | `notebooks/silver_enriched/store_dim.ipynb` |
+| 12 | Silver Enriched | `delivery_partner_dim` | Batch SCD2 | ✅ Done | `notebooks/silver_enriched/delivery_partner_dim.ipynb` |
+| 13 | Gold Curated | `dim_customer` | Batch | ⬜ Not Started | |
+| 14 | Gold Curated | `dim_product` | Batch | ⬜ Not Started | |
+| 15 | Gold Curated | `dim_store` | Batch | ⬜ Not Started | |
+| 16 | Gold Curated | `dim_delivery_partner` | Batch | ⬜ Not Started | |
+| 17 | Gold Curated | `dim_date` | Static | ⬜ Not Started | |
+| 18 | Gold Curated | `fact_orders` | Batch | ⬜ Not Started | Time-range join |
+| 19 | Gold Curated | `fact_order_items` | Batch | ⬜ Not Started | Time-range join |
+| 20 | Gold RT | `sales_summary_RT` | Streaming | ⬜ Not Started | |
+| 21 | Gold RT | `category_sales_metrics_RT` | Streaming | ⬜ Not Started | |
+| 22 | Gold RT | `payment_usage_metrics_RT` | Streaming | ⬜ Not Started | |
+| 23 | Gold RT | `order_lifecycle_metrics_RT` | Streaming | ⬜ Not Started | |
+| 24 | Gold Batch | `sales_summary` | Batch | ⬜ Not Started | |
+| 25 | Gold Batch | `category_sales_metrics` | Batch | ⬜ Not Started | |
+| 26 | Gold Batch | `discount_effectiveness` | Batch | ⬜ Not Started | |
+| 27 | Gold Batch | `delivery_partner_metrics` | Batch | ⬜ Not Started | |
 
 **Status key**: ⬜ Unknown | 🔄 In Progress | ✅ Done | ❌ Blocked
 
@@ -115,11 +115,17 @@
 
 ## Last Session Summary
 
-**Date**: _(not yet started)_
-**What was completed**: _(first session — run /init and audit existing codebase)_
-**Open issues / blockers**: _none yet_
-**Exact next step**: Run `/init` in project root, then audit existing notebooks and src/ to fill in the table status above.
-**Databricks decisions made**: _none yet_
+**Date**: 2026-05-02
+**What was completed**: 
+- Conducted architecture review on Medallion layering, Surrogate Key (SCD2) generation, and Time-Range Joins for frozen facts.
+- Brainstormed the split between `silver_customer_dim` and `gold_dim_customer`.
+- Audited the codebase and updated Medallion Layer Build Status (Landing through Silver Enriched are implemented).
+- Evaluated Great Expectations for data quality. Decided against it due to streaming latency (Gates 1 & 3) and the future Databricks migration path.
+**Open issues / blockers**: None.
+**Exact next step**: Begin implementation of the Gold Curated Layer (specifically resolving frozen surrogate keys in fact tables).
+**Databricks decisions made**: 
+- Re-affirmed that `row_number()` will be used instead of `monotonically_increasing_id()` for SK generation to ensure Databricks/Delta compatibility.
+- Decided against Great Expectations in favor of native Databricks Delta Live Tables (DLT) Expectations during migration to avoid 3rd-party overhead and streaming complexity.
 
 ---
 

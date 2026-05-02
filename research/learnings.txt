@@ -1,0 +1,186 @@
+# Data Quality, Error Handling & Production Readiness — Learnings
+
+---
+
+## 1. Streaming vs Batch Error Handling
+
+### Core Rule:
+- Streaming layers → NEVER fail the job. ALWAYS isolate bad data.
+- Batch layers → SAFE to fail. Fix root cause and retry.
+
+### Why streaming can't fail:
+If a micro-batch fails, Spark does NOT skip to new data.
+It retries the SAME failed micro-batch forever (infinite retry loop).
+The only escape is manual checkpoint surgery — risky and painful.
+
+### Applied to our architecture:
+| Layer                        | Type      | Strategy         |
+|------------------------------|-----------|------------------|
+| Landing                      | Streaming | Isolate          |
+| Bronze                       | Streaming | Isolate          |
+| Silver Base (6 fact tables)  | Streaming | Isolate          |
+| Silver Enriched (4 SCD2)     | Batch     | Fail + retry     |
+| Gold RT (4 KPI tables)       | Streaming | Isolate          |
+| Gold Batch (4 report tables) | Batch     | Fail + retry     |
+
+---
+
+## 2. Dead Letter Queue (DLQ) Pattern
+
+### What it is:
+A separate Delta table that captures rows that failed parsing or validation.
+Bad rows are redirected, not dropped. Good rows keep flowing.
+
+### Implementation:
+```python
+parsed_df = bronze_stream.withColumn("data", from_json(col("raw_payload"), schema))
+
+good_df = parsed_df.filter(col("data").isNotNull())  # → Silver tables
+bad_df  = parsed_df.filter(col("data").isNull())      # → Dead Letter table
+```
+
+### Why it matters:
+- Streams never get stuck.
+- No data is truly lost — bad rows are preserved for investigation.
+- Dashboard shows partial data (97/100) instead of nothing at all.
+- Business prefers 97 correct rows over 0 rows for hours.
+
+---
+
+## 3. Recovery Flow for Streaming Failures
+
+### Timeline of a real incident:
+1. 10:00 AM — Source team deploys buggy code, sends bad data to Kafka
+2. 10:00 AM — Your pipeline isolates bad records into DLQ, good records flow normally
+3. 10:05 AM — Alert fires (DLQ row count spiked)
+4. 12:00 PM — Source team finds their bug, deploys a fix
+5. 12:01 PM — All NEW data from source is clean, flows through pipeline automatically
+6. Gap (10:00-12:00) — Source team resends corrected records OR ops backfills from Bronze
+
+### Key insight:
+Your pipeline code never changes during this incident. The bug was in the upstream source.
+The DLQ + Bronze raw data ensures nothing is permanently lost.
+
+---
+
+## 4. Backfill Process
+
+### When needed:
+When bad data made it through the pipeline and needs to be reprocessed.
+
+### Steps:
+1. Identify the bad time window from Silver/Gold tables
+2. DELETE the bad rows from Silver
+3. Batch-read the SAME data from Bronze (raw data is still safe there)
+4. Reprocess with fixed code/schema
+5. Append corrected data back to Silver
+6. Rerun Gold → correct reports
+
+### Why Landing & Bronze must never be modified:
+They are your safety net. No matter how badly Silver or Gold breaks,
+you can always go back to the raw data and reprocess from scratch.
+
+---
+
+## 5. Databricks Workflows Recovery
+
+### Automatic:
+- Each task has configurable retries (e.g., 3 retries, 5-min delay)
+- Failure alerts go to Slack / Email / PagerDuty
+- Streaming jobs auto-restart on crash (checkpoints prevent data loss/duplication)
+
+### Manual (Repair Run):
+- Ops opens the failed job run in Databricks UI
+- Sees exactly which task failed and the error message
+- Fixes root cause (data fix, code fix, or infra scale-up)
+- Clicks "Repair Run" → reruns ONLY the failed task + downstream tasks
+- Upstream tasks that already succeeded are NOT rerun
+
+---
+
+## 6. Three Types of Failures & Their Fixes
+
+### Type 1: Bad Data from Source
+- Root cause: Producer sent malformed/missing fields
+- Fix: Notify source team → they fix producer → resend corrected records
+- Your code: unchanged
+
+### Type 2: Schema Change
+- Root cause: Source added new field, your schema doesn't have it
+- Fix: Update schema in your parsing code → deploy → use Delta Time Travel
+        to RESTORE Silver to before the bad data → rerun from Silver onwards
+- Your code: updated
+
+### Type 3: Infrastructure Failure
+- Root cause: Cluster ran out of memory (e.g., Black Friday traffic spike)
+- Fix: Scale up cluster (add workers) → restart/repair run
+- Your code: unchanged
+
+### Key principle:
+Ops team NEVER manually edits data. They either:
+- Fix the source (tell producer to fix their code)
+- Fix the code (update schema, fix transformation logic)
+- Fix the infra (scale up, restart cluster)
+Then simply RERUN. Delta + checkpoints guarantee correct results.
+
+---
+
+## 7. Data Quality Check Levels
+
+### Level 1: Simple Assertions (use now, locally)
+```python
+assert df.filter("customer_id IS NULL").count() == 0, "Null PKs found!"
+```
+
+### Level 2: Databricks Expectations (use on Databricks)
+```python
+@dlt.expect_or_fail("valid_id", "customer_id IS NOT NULL")
+```
+
+### Level 3: Great Expectations Framework (enterprise, optional)
+- Works on Databricks (pip install great-expectations)
+- But Level 2 covers 90% of use cases already
+- More common in non-Databricks environments (Airflow + EMR)
+
+---
+
+## 8. Production Migration Checklist
+
+1. Refactor: Move logic from notebook cells into testable .py functions
+2. Unit tests: pytest with small sample DataFrames
+3. Infrastructure swaps: paths, secrets, table naming (Unity Catalog)
+4. Orchestration: Databricks Workflows with dependency chains
+6. Monitoring: DLQ row count alerts, pipeline latency dashboards
+
+---
+
+## 9. Architectural Decisions (2026-03-31)
+
+### 1. Modular, Production-Grade Code Structure
+- **Rule:** Notebooks should be thin orchestrators (5-10 lines).
+- **Action:** Move all transformation logic, Kafka connections, and Delta I/O into reusable `.py` files inside a `src/` directory.
+- **Benefit:** Code becomes testable via `pytest`, maintainable, and reusable across all tables.
+
+### 2. Modern Spark Streaming Abstractions
+- **Rule:** Stop using `.load("/path/...")` and `.start("/path/...")`.
+- **Action:** Use `spark.readStream.table("database.table")` and `.writeStream.toTable("database.table")` inside generic utility functions with `**options`.
+- **Benefit:** Completely decouples code from storage paths, readying the pipeline for Databricks Unity Catalog.
+
+### 3. Change Data Feed (CDF) Limits
+- **Rule:** Streams inherently read only new data via checkpoints.
+- **Action:** CDF (`readChangeFeed=true`) is ONLY needed for **Batch** SCD2 dimension jobs. The 14 append-only streaming tables do NOT need CDF.
+
+### 4. The `ignoreChanges` Flag
+- **Rule:** Streams crash if the underlying table files are manually modified.
+- **Action:** Set `ignoreChanges=true` specifically for **Gold RT** streams reading from Silver Base.
+- **Benefit:** Gold RT live dashboards will survive manual data cleanups (e.g., ops running DELETE statements) in Silver without crashing.
+
+### 5. Self-Healing Streaming via DLQ
+- **Rule:** Streams NEVER fail.
+- **Action:** Implement inline filtering to push bad data to a DLQ.
+- **Benefit:** The stream doesn't crash on bad data. The dashboard temporarily misses the bad order. When the source resends the corrected order, it passes the DLQ and the dashboard heals automatically.
+
+### 6. The Real-Time vs. Batch Trade-off
+- **Rule:** Real-time prioritizes uptime; Batch prioritizes flawless accuracy.
+- **Action:** Accept minor anomalies (like missed deletes) in Gold RT. Rely on the nightly **Gold Batch** fact tables for audited truth.
+- **Benefit:** Gold Batch uses `ROW_NUMBER() OVER(PARTITION BY order_id ORDER BY ingest_ts DESC)` to perfectly deduplicate and resolve upserts/fixes from the source.

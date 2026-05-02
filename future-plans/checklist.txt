@@ -1,0 +1,124 @@
+# Production Readiness Checklist
+# Consolidated tracker for all post-development improvements
+# Reference: future-plans/todo.txt for detailed notes on each item
+
+---
+
+## A. New Feature
+- [ ] Gold RT Table #28: gold_delivery_status_RT (Stream-Static Join for delivery partner live dashboard)
+    
+---
+
+## B. Code Quality
+- [ ] Refactor all notebooks into thin orchestrators (call functions, not inline logic)
+- [ ] Extract transformation logic into src/transformations/*.py
+- [ ] Make SCD2 merge function generic (reusable across all 4 dims)
+- [ ] Move shared utilities to src/utils/*.py
+
+---
+
+## C. Testing
+- [ ] Create tests/ directory with pytest
+- [ ] Unit tests for each transformation function (parse, deduplicate, merge)
+- [ ] Edge case tests: null fields, duplicates, schema changes, empty batches
+
+---
+
+## D. Infrastructure (Databricks Migration)
+- [ ] Swap paths: /opt/spark-data/ → abfss://container@storage.dfs.core.windows.net/
+- [ ] Swap secrets: hardcoded Kafka keys → Databricks Secrets / Azure Key Vault
+- [ ] Swap table naming: 2-level → 3-level Unity Catalog (catalog.database.table)
+- [ ] Remove manual SparkSession creation
+
+---
+
+## E. Orchestration
+- [ ] Set up Databricks Workflows for batch SCD2 jobs
+- [ ] Define job dependency chain: Landing → Bronze → Silver → Gold
+- [ ] Configure retry policies (3 retries, 5-min delay)
+- [ ] Configure failure alerts (Slack / PagerDuty)
+
+---
+
+## F. Data Quality — DLQ (Dead Letter Queue)
+# Note: Landing & Bronze are raw capture layers (unparsed). No DLQ needed there.
+# DLQ starts at Silver where we first parse and extract fields.
+- [ ] Silver Base — order_fact_RT: add DLQ + rejection_reason
+- [ ] Silver Base — order_event_fact_RT: add DLQ + rejection_reason
+- [ ] Silver Base — order_item_fact_RT: add DLQ + rejection_reason
+- [ ] Silver Base — payment_attempt_fact_RT: add DLQ + rejection_reason
+- [ ] Silver Base — delivery_fact_RT: add DLQ + rejection_reason
+- [ ] Silver Base — discount_fact_RT: add DLQ + rejection_reason
+- [ ] Gold RT — sales_summary_RT: add DLQ + rejection_reason
+- [ ] Gold RT — category_sales_metrics_RT: add DLQ + rejection_reason
+- [ ] Gold RT — payment_usage_metrics_RT: add DLQ + rejection_reason
+- [ ] Gold RT — order_lifecycle_metrics_RT: add DLQ + rejection_reason
+- [ ] DLQ monitoring job: check DLQ row counts every 5 mins, alert on spike
+
+---
+
+## G. Data Quality — Assertions
+- [ ] Add null checks on primary keys at every layer
+- [ ] Add business rule checks (price > 0, quantity > 0, valid payment methods)
+- [ ] Add format-level checks for fixed-format fields (e.g., zip must be 6 digits, phone must be 10 digits)
+- [ ] Add schema validation before MERGE operations
+
+---
+
+## H. Duplicate Detection
+- [ ] Gold Batch (fact_orders): ROW_NUMBER dedup on order_id
+- [ ] Gold Batch (fact_order_items): ROW_NUMBER dedup on item_id
+- [ ] Gold RT: dropDuplicatesWithinWatermark on business keys
+
+---
+
+## I. Watermarking (Gold RT Only)
+- [ ] gold_sales_summary_RT: withWatermark("event_time", "30 minutes")
+- [ ] gold_category_sales_metrics_RT: withWatermark
+- [ ] gold_payment_usage_metrics_RT: withWatermark
+- [ ] gold_order_lifecycle_metrics_RT: withWatermark
+
+---
+
+## J. Monitoring
+- [ ] Data freshness monitoring job: check MAX(ingest_ts) at each layer every 5 mins
+- [ ] Pipeline SLA threshold: alert if any layer is >5 minutes stale
+- [ ] Row count reconciliation: Landing = Bronze = Silver good + Silver DLQ
+
+---
+
+## K. CI/CD Pipeline
+- [ ] Store all code in Git (GitHub / Azure DevOps)
+- [ ] Enforce Pull Request reviews for every code change
+- [ ] Automated pytest runs on every PR
+- [ ] Auto-deploy approved code to Databricks via GitHub Actions / Azure Pipelines
+
+---
+
+## L. Configuration Management
+- [ ] Create configs/ directory with per-environment YAML files (dev, staging, prod)
+- [ ] Externalize: paths, trigger intervals, watermark durations, Kafka settings
+- [ ] No hardcoded values in transformation code
+
+---
+
+## M. Performance Optimization
+- [ ] Partition large tables by date or store_id
+- [ ] Z-Order frequently queried columns (OPTIMIZE table ZORDER BY col)
+- [ ] Schedule VACUUM to clean up old Delta file versions
+- [ ] Enable auto compaction to prevent small file problem from streaming appends
+
+---
+
+## N. Security & Governance
+- [ ] PII masking on customer name, address, zip (Unity Catalog column-level)
+- [ ] Access control: Analysts → Gold only, Engineers → all layers
+- [ ] Enable Unity Catalog data lineage tracking (table-to-table dependencies)
+- [ ] Tag PII columns with sensitivity labels
+
+---
+
+## O. Structured Logging
+- [ ] Replace all print() with Python logging module
+- [ ] Include job_name, version, row_count in every log entry
+- [ ] Configure log output to be queryable (JSON format for log analytics)

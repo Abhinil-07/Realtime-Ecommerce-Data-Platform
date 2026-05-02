@@ -1,6 +1,8 @@
+# .graphifyignore
 .env
 .ipynb_checkpoints/
 __pycache__/
 *.pyc
 .DS_Store
-graphify-out/
+
+
