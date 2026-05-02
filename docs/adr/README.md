@@ -7,6 +7,7 @@ This directory contains Architecture Decision Records (ADRs) for the RT Ecommerc
 | ADR | Title | Status | Date |
 |-----|-------|--------|------|
 | 0001 | Retain Surrogate Keys for Dimensions and Facts | Accepted | 2026-05-02 |
+| 0002 | Data Quality Handling Pattern (DLQ vs. Crash) | Accepted | 2026-05-02 |
 
 ## Creating a New ADR
 
